@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:smtp="http://www.mulesoft.org/schema/mule/smtp" xmlns:jirarest="http://www.mulesoft.org/schema/mule/jirarest" xmlns:ftp="http://www.mulesoft.org/schema/mule/ee/ftp" xmlns:amqp="http://www.mulesoft.org/schema/mule/amqp" xmlns:jms="http://www.mulesoft.org/schema/mule/jms" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:apachekafka="http://www.mulesoft.org/schema/mule/apachekafka" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/apachekafka http://www.mulesoft.org/schema/mule/apachekafka/current/mule-apachekafka.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/amqp http://www.mulesoft.org/schema/mule/amqp/current/mule-amqp.xsd
+http://www.mulesoft.org/schema/mule/ee/ftp http://www.mulesoft.org/schema/mule/ee/ftp/current/mule-ftp-ee.xsd
+http://www.mulesoft.org/schema/mule/smtp http://www.mulesoft.org/schema/mule/smtp/current/mule-smtp.xsd
+http://www.mulesoft.org/schema/mule/jirarest http://www.mulesoft.org/schema/mule/jirarest/current/mule-jirarest.xsd">
+   
+    <apachekafka:config name="Apache_Kafka__Configuration" bootstrapServers="localhost:2181" consumerPropertiesFile="consumer.properties" producerPropertiesFile="producer.properties" doc:name="Apache Kafka: Configuration"/>
+    <http:listener-config name="HTTP_Listener_Configuration1" protocol="HTTPS" host="0.0.0.0" port="443" doc:name="HTTP Listener Configuration">
+        <tls:context>
+            <tls:key-store type="jks" path="kafka1-service.jks" alias="mule" keyPassword="changeme" password="changeme"/>
+        </tls:context>
+    </http:listener-config>
+    <flow name="kafka-pocFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration1" path="/" doc:name="HTTP"/>
+        <apachekafka:producer config-ref="Apache_Kafka__Configuration" topic="Topic8" key="#[server.dateTime]" doc:name="Apache Kafka"/>
+        <amqp:outbound-endpoint responseTimeout="10000" doc:name="AMQP-0-9"/>
+        <jms:outbound-endpoint doc:name="JMS"/>
+        <ftp:outbound-endpoint host="localhost" port="21" passive="true" responseTimeout="10000" doc:name="FTP"/>
+        <smtp:outbound-endpoint host="localhost" port="587" responseTimeout="10000" doc:name="SMTP"/>
+        <jirarest:no-operation-selected config-ref="" doc:name="Jira Rest"/>
+    </flow>
+    <flow name="kafka-pocFlow1">
+        <apachekafka:consumer config-ref="Apache_Kafka__Configuration" topic="Topic8" partitions="1" doc:name="Apache Kafka (Streaming)"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+    </flow>
+</mule>

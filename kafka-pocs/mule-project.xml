@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-project xmlns="http://www.mulesoft.com/tooling/project" runtimeId="org.mule.tooling.server.3.9.1.ee" schemaVersion="5.3.0.0">
+    <name>kafka-pocs</name>
+    <description></description>
+    <muleExtension name="Apache Kafka" qualifier="org.mule.tooling.ui.contribution.apachekafka.3.7.0"/>
+    <muleExtension name="AMQP-0-9" qualifier="mule-transport-amqp-contribution"/>
+    <muleExtension name="AMQPS-0-9" qualifier="mule-transport-amqp-contribution"/>
+    <muleExtension name="Jira Rest" qualifier="org.mule.tooling.ui.contribution.jirarest.3.6.0"/>
+</mule-project>
